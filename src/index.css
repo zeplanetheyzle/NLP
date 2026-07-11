@@ -1,0 +1,94 @@
+:root {
+    --bg: #06060f;
+    --accent1: #b537f2; --accent2: #ff2e88; --accent3: #00e5ff; --accent4: #ffe600;
+    --text: #f2f3ff; --muted: #aab0d8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+    overflow-x: hidden; cursor: none;
+}
+/* 오로라 배경 */
+body::before {
+    content: ""; position: fixed; inset: -50%; z-index: -2;
+    background:
+        radial-gradient(circle at 15% 25%, rgba(181,55,242,.40), transparent 38%),
+        radial-gradient(circle at 85% 15%, rgba(255,46,136,.38), transparent 40%),
+        radial-gradient(circle at 60% 85%, rgba(0,229,255,.32), transparent 42%);
+    filter: blur(55px);
+    animation: drift 16s ease-in-out infinite alternate;
+}
+@keyframes drift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(4%,-3%) scale(1.1)} 100%{transform:translate(-4%,3%) scale(1.05)} }
+.stars { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.stars span { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: .8; animation: twinkle 3s infinite ease-in-out; }
+@keyframes twinkle { 0%,100%{opacity:.15; transform:scale(.6)} 50%{opacity:1; transform:scale(1.3)} }
+
+/* 커서를 따라다니는 글로우 + 점 (React가 위치 제어) */
+.cursor-glow {
+    position: fixed; top: 0; left: 0; width: 420px; height: 420px;
+    margin: -210px 0 0 -210px; border-radius: 50%; pointer-events: none; z-index: 5;
+    background: radial-gradient(circle, rgba(0,229,255,.22), rgba(181,55,242,.15) 40%, transparent 70%);
+    mix-blend-mode: screen; transition: opacity .3s; will-change: transform;
+}
+.cursor-dot {
+    position: fixed; top: 0; left: 0; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border-radius: 50%; background: #fff; box-shadow: 0 0 12px #fff; pointer-events: none; z-index: 6;
+}
+
+header { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; position: relative; }
+.badge { font-size: .8rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent3); border: 1px solid rgba(0,229,255,.4); padding: 6px 18px; border-radius: 999px; margin-bottom: 22px; background: rgba(0,229,255,.06); animation: pulse 3s infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 rgba(0,229,255,0)} 50%{box-shadow:0 0 22px rgba(0,229,255,.5)} }
+header h1 { position: relative; font-size: clamp(2.8rem, 8vw, 5.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1.05;
+    background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2), var(--accent4), var(--accent3)); background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 6s linear infinite;
+    transform-style: preserve-3d; transition: transform .12s ease-out, filter .25s ease;
+    text-shadow: 0 0 calc(8px + var(--glow, 0) * 30px) rgba(0,229,255, calc(.25 + var(--glow, 0) * .55)); }
+@keyframes shine { to { background-position: 300% 0; } }
+.title-spot {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255,255,255,.85), rgba(0,229,255,.35) 35%, transparent 65%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    opacity: var(--glow, 0); transition: opacity .25s ease; mix-blend-mode: screen;
+}
+header p { font-size: 1.25rem; color: var(--muted); margin-top: 16px; }
+.scroll-hint { margin-top: 44px; font-size: .9rem; color: var(--muted); animation: bounce 2s infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(9px)} }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 30px 20px 100px; }
+.section-title { font-size: 1.9rem; text-align: center; margin: 50px 0 34px; position: relative; }
+.section-title::after { content: ""; display: block; width: 80px; height: 4px; margin: 14px auto 0; border-radius: 4px; background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2)); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px; }
+
+.card {
+    position: relative; background: rgba(255,255,255,.05); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 30px;
+    transform-style: preserve-3d; transition: box-shadow .3s ease; opacity: 0; transform: translateY(34px);
+}
+.card.visible { opacity: 1; transform: translateY(0); }
+.card::before { content: ""; position: absolute; inset: -1px; border-radius: 20px; padding: 1px;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .3s ease; }
+.card:hover::before { opacity: 1; box-shadow: 0 22px 60px rgba(255,46,136,.35); }
+/* 카드 안에서 커서를 따라 밝아지는 스포트라이트 */
+.card .spot { position: absolute; inset: 0; border-radius: 20px; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 60%); }
+.card:hover .spot { opacity: 1; }
+.card .icon { font-size: 2.2rem; margin-bottom: 12px; display: inline-block; filter: drop-shadow(0 0 10px rgba(0,229,255,.6)); transform: translateZ(40px); }
+.card h3 { color: #fff; font-size: 1.3rem; margin-bottom: 10px; transform: translateZ(30px); }
+.tag { display: inline-block; font-size: .72rem; font-weight: 700; background: linear-gradient(135deg, var(--accent1), var(--accent2)); color: #fff; border-radius: 999px; padding: 4px 11px; margin: 0 6px 12px 0; }
+.card p { font-size: .92rem; color: var(--muted); transform: translateZ(20px); }
+.card a { display: inline-block; margin: 6px 14px 0 0; color: var(--accent3); text-decoration: none; font-weight: 700; transform: translateZ(25px); }
+.card a:hover { text-shadow: 0 0 10px var(--accent3); }
+.stack { text-align: center; }
+.stack .tag { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); }
+footer { text-align: center; padding: 30px; color: var(--muted); font-size: .85rem; }
+
+@media (prefers-reduced-motion: reduce), (hover: none) {
+    body { cursor: auto; }
+    .cursor-glow, .cursor-dot { display: none; }
+    body::before, .stars span, .badge, header h1, .scroll-hint { animation: none; }
+    .card { opacity: 1; transform: none; }
+}
