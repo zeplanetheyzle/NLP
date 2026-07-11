@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안녕하세요 - React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            color: #fff;
+        }
+        #root { width: 100%; max-width: 640px; padding: 40px 20px; }
+        .card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }
+        h1 { margin-top: 0; font-size: 2rem; }
+        .hello-wrap { position: relative; display: inline-block; }
+        .hello-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 140%; height: 220%;
+            transform: translate(-50%, -50%) scale(0.6);
+            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,221,87,0.7) 35%, rgba(106,17,203,0) 70%);
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(8px);
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+            z-index: 0;
+        }
+        .hello-wrap:hover .hello-glow {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .hello-btn {
+            position: relative;
+            z-index: 1;
+            background: #fff;
+            color: #6a11cb;
+            border: none;
+            border-radius: 999px;
+            padding: 14px 36px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .1s ease, box-shadow .2s ease;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+        .hello-wrap:hover .hello-btn { transform: translateY(-2px) scale(1.04); }
+        .hello-btn:active { transform: translateY(0); }
+        .guide {
+            margin-top: 28px;
+            text-align: left;
+            background: rgba(0,0,0,0.18);
+            border-radius: 12px;
+            padding: 20px 24px;
+            animation: fade .3s ease;
+        }
+        .guide h2 { margin: 0 0 12px; font-size: 1.2rem; }
+        .guide ol { margin: 0; padding-left: 20px; line-height: 1.8; }
+        .guide li { margin-bottom: 6px; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [showGuide, setShowGuide] = useState(false);
+
+            return (
+                <div className="card">
+                    <h1>👋 안녕하세요</h1>
+                    <p>아래 버튼을 눌러 시작해 보세요.</p>
+                    <div className="hello-wrap">
+                        <span className="hello-glow"></span>
+                        <button className="hello-btn" onClick={() => setShowGuide(v => !v)}>
+                            안녕하세요
+                        </button>
+                    </div>
+
+                    {showGuide && (
+                        <div className="guide">
+                            <h2>뭐 어떻게 하는?</h2>
+                            <ol>
+                                <li><b>안녕하세요</b> 버튼을 누르면 이 설명이 펼쳐집니다.</li>
+                                <li>버튼을 다시 누르면 설명이 사라집니다 (토글).</li>
+                                <li>원하는 기능을 추가하려면 아래 코드를 수정하세요.</li>
+                                <li>React 상태(<code>useState</code>)로 화면을 자유롭게 제어할 수 있어요.</li>
+                            </ol>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
