@@ -50,10 +50,19 @@
         header { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; position: relative; }
         .badge { font-size: .8rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent3); border: 1px solid rgba(0,229,255,.4); padding: 6px 18px; border-radius: 999px; margin-bottom: 22px; background: rgba(0,229,255,.06); animation: pulse 3s infinite; }
         @keyframes pulse { 0%,100%{box-shadow:0 0 0 rgba(0,229,255,0)} 50%{box-shadow:0 0 22px rgba(0,229,255,.5)} }
-        header h1 { font-size: clamp(2.8rem, 8vw, 5.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1.05;
+        header h1 { position: relative; font-size: clamp(2.8rem, 8vw, 5.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1.05;
             background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2), var(--accent4), var(--accent3)); background-size: 300% 100%;
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 6s linear infinite; }
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 6s linear infinite;
+            transform-style: preserve-3d; transition: transform .12s ease-out, filter .25s ease;
+            text-shadow: 0 0 calc(8px + var(--glow, 0) * 30px) rgba(0,229,255, calc(.25 + var(--glow, 0) * .55)); }
         @keyframes shine { to { background-position: 300% 0; } }
+        .title-spot {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1;
+            background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%),
+                rgba(255,255,255,.85), rgba(0,229,255,.35) 35%, transparent 65%);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            opacity: var(--glow, 0); transition: opacity .25s ease; mix-blend-mode: screen;
+        }
         header p { font-size: 1.25rem; color: var(--muted); margin-top: 16px; }
         .scroll-hint { margin-top: 44px; font-size: .9rem; color: var(--muted); animation: bounce 2s infinite; }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(9px)} }
@@ -101,10 +110,11 @@
     <script type="text/babel">
         const { useEffect, useRef } = React;
 
-        // 커서를 따라다니는 글로우 + 점
-        function Cursor() {
-            const glow = useRef(null);
+        // 커서를 따라다니는 글로우 + 점 (glowRef로 외부 제어 가능)
+        function Cursor({ glowRef }) {
             const dot = useRef(null);
+            const localGlow = useRef(null);
+            const glow = glowRef || localGlow;
             useEffect(() => {
                 let gx = window.innerWidth / 2, gy = window.innerHeight / 2;
                 let dx = gx, dy = gy, raf;
@@ -112,7 +122,7 @@
                     // 글로우는 부드럽게 추적, 점은 바로 따라옴
                     gx += (mouseX - gx) * 0.15; gy += (mouseY - gy) * 0.15;
                     dx += (mouseX - dx) * 0.5;  dy += (mouseY - dy) * 0.5;
-                    if (glow.current) glow.current.style.transform = `translate(${gx}px, ${gy}px)`;
+                    if (glow.current) glow.current.style.transform = `translate(${gx}px, ${gy}px) scale(var(--gs, 1))`;
                     if (dot.current) dot.current.style.transform = `translate(${dx}px, ${dy}px)`;
                     raf = requestAnimationFrame(loop);
                 };
@@ -170,7 +180,37 @@
             );
         }
 
+        // 상단 타이틀: 커서를 따라 기울어지고, 커서 위치에 빛이 비치며, 닿으면 커서 글로우가 커짐
+        function Title({ glowRef }) {
+            const ref = useRef(null);
+            const onMove = (e) => {
+                const el = ref.current; if (!el) return;
+                const r = el.getBoundingClientRect();
+                const px = (e.clientX - r.left) / r.width;
+                const py = (e.clientY - r.top) / r.height;
+                const rx = (0.5 - py) * 28, ry = (px - 0.5) * 28;
+                el.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+                el.style.setProperty('--mx', (px * 100) + '%');
+                el.style.setProperty('--my', (py * 100) + '%');
+                el.style.setProperty('--glow', '1');
+            };
+            const onEnter = () => { if (glowRef && glowRef.current) glowRef.current.style.setProperty('--gs', '1.8'); };
+            const onLeave = () => {
+                const el = ref.current;
+                if (el) el.style.transform = '';
+                el.style.setProperty('--glow', '0');
+                if (glowRef && glowRef.current) glowRef.current.style.setProperty('--gs', '1');
+            };
+            return (
+                <h1 ref={ref} onMouseMove={onMove} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+                    <span className="title-spot" aria-hidden="true">PROJECT<br />SHOWCASE</span>
+                    PROJECT<br />SHOWCASE
+                </h1>
+            );
+        }
+
         function App() {
+            const glowRef = useRef(null);
             useEffect(() => {
                 const cards = document.querySelectorAll('.card');
                 const io = new IntersectionObserver((entries) => {
@@ -196,11 +236,11 @@
 
             return (
                 <React.Fragment>
-                    <Cursor />
+                    <Cursor glowRef={glowRef} />
                     <Stars />
                     <header>
                         <div className="badge">Portfolio</div>
-                        <h1>PROJECT<br />SHOWCASE</h1>
+                        <Title glowRef={glowRef} />
                         <p>NLP · 음성 처리 · 웹 프로토타입</p>
                         <div className="scroll-hint">아래로 스크롤 ↓</div>
                     </header>
