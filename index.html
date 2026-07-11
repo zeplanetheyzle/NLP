@@ -3,22 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>안녕하세요</title>
+    <title>정혜원 · Portfolio</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #9b59b6;
-            color: white;
-            font-family: Arial, sans-serif;
-            font-size: 3rem;
+            font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #0f1020;
+            color: #e8e8f0;
+            line-height: 1.6;
         }
+        header {
+            padding: 80px 20px 60px;
+            text-align: center;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        }
+        header h1 { margin: 0; font-size: 2.8rem; }
+        header p { font-size: 1.2rem; opacity: .92; margin-top: 12px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+        .section-title { font-size: 1.6rem; border-left: 4px solid #6a11cb; padding-left: 12px; margin: 40px 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card {
+            background: #1b1d33;
+            border: 1px solid #2c2f4a;
+            border-radius: 14px;
+            padding: 24px;
+            transition: transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+        .card:hover { transform: translateY(-4px); border-color: #6a11cb; box-shadow: 0 10px 30px rgba(106,17,203,.25); }
+        .card h3 { margin: 0 0 8px; color: #fff; }
+        .tag { display: inline-block; font-size: .75rem; background: #6a11cb; color: #fff; border-radius: 999px; padding: 3px 10px; margin: 0 6px 8px 0; }
+        .card p { font-size: .92rem; color: #b8b8c8; }
+        .card a { color: #8ab4ff; text-decoration: none; font-weight: 600; }
+        .card a:hover { text-decoration: underline; }
+        footer { text-align: center; padding: 30px; color: #777; font-size: .85rem; }
     </style>
 </head>
 <body>
-    안녕하세요
+    <header>
+        <h1>정혜원</h1>
+        <p>NLP · 음성 처리 · 웹 프로토타입 포트폴리오</p>
+    </header>
+
+    <main class="container">
+        <h2 class="section-title">프로젝트</h2>
+        <div class="grid">
+            <div class="card">
+                <span class="tag">React</span><span class="tag">CSS</span>
+                <h3>안녕하세요 인터랙션 데모</h3>
+                <p>React로 만든 버튼. 마우스를 올리면 뒤에서 빛이 퍼지는 hover glow 효과와 가이드 패널 토글을 구현했습니다.</p>
+                <p><a href="react-hello/index.html">▶ 데모 열기</a></p>
+            </div>
+
+            <div class="card">
+                <span class="tag">Python</span><span class="tag">K-means</span>
+                <h3>K-means 화자 분리</h3>
+                <p>MFCC 평균 벡터를 K-means로 군집하여 발화 구간별 화자를 분리하는 기본 파이프라인입니다.</p>
+                <p><a href="speaker_diarization.py">▶ 코드 보기</a></p>
+            </div>
+
+            <div class="card">
+                <span class="tag">SpeechBrain</span><span class="tag">x-vector</span><span class="tag">K-means</span>
+                <h3>x-vector 화자 임베딩 분리</h3>
+                <p>SpeechBrain 사전학습 x-vector로 화자 임베딩을 추출하고 K-means로 군집해 정확도를 높인 버전 (.py + .ipynb).</p>
+                <p><a href="speaker_diarization_xvector.py">▶ 코드 보기</a> · <a href="speaker_diarization_xvector.ipynb">▶ Notebook</a></p>
+            </div>
+        </div>
+
+        <h2 class="section-title">기술 스택</h2>
+        <p>
+            <span class="tag">Python</span>
+            <span class="tag">PyTorch</span>
+            <span class="tag">SpeechBrain</span>
+            <span class="tag">scikit-learn</span>
+            <span class="tag">librosa</span>
+            <span class="tag">React</span>
+            <span class="tag">HTML/CSS</span>
+        </p>
+    </main>
+
+    <footer>© 2026 정혜원 · github.com/zeplanetheyzle</footer>
 </body>
 </html>
