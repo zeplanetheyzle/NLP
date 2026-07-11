@@ -2,6 +2,16 @@
 
 NLP / 음성 처리 / 웹 프로토타입 실습 포트폴리오입니다.
 
+## 웹 포트폴리오 실행 (Vite + React)
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # dist/ 에 프로덕션 빌드
+```
+
+> 메인 페이지(`index.html` + `src/`)는 Vite 기반 React 앱입니다. `react-hello/index.html`은 빌드 없이 브라우저에서 바로 열리는 CDN React 데모입니다.
+
 ## 포함된 프로젝트
 
 ### 1. 안녕하세요 인터랙션 데모 (`react-hello/`)
