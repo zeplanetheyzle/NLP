@@ -4,68 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         :root {
             --bg: #06060f;
-            --accent1: #b537f2;
-            --accent2: #ff2e88;
-            --accent3: #00e5ff;
-            --accent4: #ffe600;
-            --card: rgba(255,255,255,0.05);
-            --text: #f2f3ff;
-            --muted: #aab0d8;
+            --accent1: #b537f2; --accent2: #ff2e88; --accent3: #00e5ff; --accent4: #ffe600;
+            --text: #f2f3ff; --muted: #aab0d8;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Segoe UI', 'Apple SD Gothic Neo', system-ui, sans-serif;
             background: var(--bg); color: var(--text); line-height: 1.7;
-            overflow-x: hidden;
+            overflow-x: hidden; cursor: none;
         }
-        /* 움직이는 오로라 + 별 반짝임 배경 */
+        /* 오로라 배경 */
         body::before {
             content: ""; position: fixed; inset: -50%; z-index: -2;
             background:
                 radial-gradient(circle at 15% 25%, rgba(181,55,242,.40), transparent 38%),
                 radial-gradient(circle at 85% 15%, rgba(255,46,136,.38), transparent 40%),
-                radial-gradient(circle at 60% 85%, rgba(0,229,255,.32), transparent 42%),
-                radial-gradient(circle at 30% 75%, rgba(255,230,0,.18), transparent 40%);
+                radial-gradient(circle at 60% 85%, rgba(0,229,255,.32), transparent 42%);
             filter: blur(55px);
             animation: drift 16s ease-in-out infinite alternate;
         }
-        @keyframes drift {
-            0%{transform:translate(0,0) scale(1) rotate(0deg)}
-            50%{transform:translate(4%,-3%) scale(1.12) rotate(4deg)}
-            100%{transform:translate(-4%,3%) scale(1.06) rotate(-3deg)}
-        }
-        /* 별/반짝 입자 */
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(4%,-3%) scale(1.1)} 100%{transform:translate(-4%,3%) scale(1.05)} }
         .stars { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-        .stars span {
-            position: absolute; width: 3px; height: 3px; border-radius: 50%;
-            background: #fff; opacity: .8; animation: twinkle 3s infinite ease-in-out;
-        }
+        .stars span { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: .8; animation: twinkle 3s infinite ease-in-out; }
         @keyframes twinkle { 0%,100%{opacity:.15; transform:scale(.6)} 50%{opacity:1; transform:scale(1.3)} }
 
-        header {
-            min-height: 78vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            padding: 40px 20px; position: relative;
+        /* 커서를 따라다니는 글로우 (React가 위치 제어) */
+        .cursor-glow {
+            position: fixed; top: 0; left: 0; width: 420px; height: 420px;
+            margin: -210px 0 0 -210px; border-radius: 50%; pointer-events: none; z-index: 5;
+            background: radial-gradient(circle, rgba(0,229,255,.22), rgba(181,55,242,.15) 40%, transparent 70%);
+            mix-blend-mode: screen; transition: opacity .3s; will-change: transform;
         }
-        .badge {
-            font-size: .8rem; letter-spacing: 4px; text-transform: uppercase;
-            color: var(--accent3); border: 1px solid rgba(0,229,255,.4);
-            padding: 6px 18px; border-radius: 999px; margin-bottom: 22px;
-            background: rgba(0,229,255,.06); animation: pulse 3s infinite;
+        .cursor-dot {
+            position: fixed; top: 0; left: 0; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+            border-radius: 50%; background: #fff; box-shadow: 0 0 12px #fff; pointer-events: none; z-index: 6;
         }
+
+        header { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; position: relative; }
+        .badge { font-size: .8rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent3); border: 1px solid rgba(0,229,255,.4); padding: 6px 18px; border-radius: 999px; margin-bottom: 22px; background: rgba(0,229,255,.06); animation: pulse 3s infinite; }
         @keyframes pulse { 0%,100%{box-shadow:0 0 0 rgba(0,229,255,0)} 50%{box-shadow:0 0 22px rgba(0,229,255,.5)} }
-        header h1 {
-            font-size: clamp(2.8rem, 8vw, 5.5rem); font-weight: 900;
-            letter-spacing: -2px; line-height: 1.05;
-            background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2), var(--accent4), var(--accent3));
-            background-size: 300% 100%;
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-            animation: shine 6s linear infinite;
-        }
+        header h1 { font-size: clamp(2.8rem, 8vw, 5.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1.05;
+            background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2), var(--accent4), var(--accent3)); background-size: 300% 100%;
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 6s linear infinite; }
         @keyframes shine { to { background-position: 300% 0; } }
         header p { font-size: 1.25rem; color: var(--muted); margin-top: 16px; }
         .scroll-hint { margin-top: 44px; font-size: .9rem; color: var(--muted); animation: bounce 2s infinite; }
@@ -73,129 +60,166 @@
 
         .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px 100px; }
         .section-title { font-size: 1.9rem; text-align: center; margin: 50px 0 34px; position: relative; }
-        .section-title::after {
-            content: ""; display: block; width: 80px; height: 4px; margin: 14px auto 0; border-radius: 4px;
-            background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2));
-        }
+        .section-title::after { content: ""; display: block; width: 80px; height: 4px; margin: 14px auto 0; border-radius: 4px; background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent2)); }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px; }
 
         .card {
-            position: relative; background: var(--card); backdrop-filter: blur(16px);
+            position: relative; background: rgba(255,255,255,.05); backdrop-filter: blur(16px);
             border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 30px;
-            transition: transform .3s ease, box-shadow .3s ease;
-            opacity: 0; transform: translateY(34px);
+            transform-style: preserve-3d; transition: box-shadow .3s ease; opacity: 0; transform: translateY(34px);
         }
         .card.visible { opacity: 1; transform: translateY(0); }
-        /* 네온 테두리 glow */
-        .card::before {
-            content: ""; position: absolute; inset: -1px; border-radius: 20px; padding: 1px;
+        .card::before { content: ""; position: absolute; inset: -1px; border-radius: 20px; padding: 1px;
             background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor; mask-composite: exclude;
-            opacity: 0; transition: opacity .3s ease;
-        }
-        .card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 22px 60px rgba(255,46,136,.35); }
-        .card:hover::before { opacity: 1; }
-        .card .icon {
-            font-size: 2.2rem; margin-bottom: 12px; display: inline-block;
-            filter: drop-shadow(0 0 10px rgba(0,229,255,.6));
-        }
-        .card h3 { color: #fff; font-size: 1.3rem; margin-bottom: 10px; }
-        .tag {
-            display: inline-block; font-size: .72rem; font-weight: 700;
-            background: linear-gradient(135deg, var(--accent1), var(--accent2));
-            color: #fff; border-radius: 999px; padding: 4px 11px; margin: 0 6px 12px 0;
-        }
-        .card p { font-size: .92rem; color: var(--muted); }
-        .card a { display: inline-block; margin: 6px 14px 0 0; color: var(--accent3); text-decoration: none; font-weight: 700; }
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .3s ease; }
+        .card:hover::before { opacity: 1; box-shadow: 0 22px 60px rgba(255,46,136,.35); }
+        /* 카드 안에서 커서를 따라 밝아지는 스포트라이트 */
+        .card .spot { position: absolute; inset: 0; border-radius: 20px; pointer-events: none; opacity: 0; transition: opacity .3s;
+            background: radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 60%); }
+        .card:hover .spot { opacity: 1; }
+        .card .icon { font-size: 2.2rem; margin-bottom: 12px; display: inline-block; filter: drop-shadow(0 0 10px rgba(0,229,255,.6)); transform: translateZ(40px); }
+        .card h3 { color: #fff; font-size: 1.3rem; margin-bottom: 10px; transform: translateZ(30px); }
+        .tag { display: inline-block; font-size: .72rem; font-weight: 700; background: linear-gradient(135deg, var(--accent1), var(--accent2)); color: #fff; border-radius: 999px; padding: 4px 11px; margin: 0 6px 12px 0; }
+        .card p { font-size: .92rem; color: var(--muted); transform: translateZ(20px); }
+        .card a { display: inline-block; margin: 6px 14px 0 0; color: var(--accent3); text-decoration: none; font-weight: 700; transform: translateZ(25px); }
         .card a:hover { text-shadow: 0 0 10px var(--accent3); }
-
         .stack { text-align: center; }
         .stack .tag { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); }
-
         footer { text-align: center; padding: 30px; color: var(--muted); font-size: .85rem; }
 
-        @media (prefers-reduced-motion: reduce) {
+        @media (prefers-reduced-motion: reduce), (hover: none) {
+            body { cursor: auto; }
+            .cursor-glow, .cursor-dot { display: none; }
             body::before, .stars span, .badge, header h1, .scroll-hint { animation: none; }
             .card { opacity: 1; transform: none; }
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
+    <div id="root"></div>
 
-    <header>
-        <div class="badge">Portfolio</div>
-        <h1>PROJECT<br>SHOWCASE</h1>
-        <p>NLP · 음성 처리 · 웹 프로토타입</p>
-        <div class="scroll-hint">아래로 스크롤 ↓</div>
-    </header>
+    <script type="text/babel">
+        const { useEffect, useRef } = React;
 
-    <main class="container">
-        <h2 class="section-title">프로젝트</h2>
-        <div class="grid">
-            <div class="card">
-                <div class="icon">⚛️</div>
-                <span class="tag">React</span><span class="tag">CSS</span>
-                <h3>안녕하세요 인터랙션 데모</h3>
-                <p>React로 만든 버튼. 마우스를 올리면 뒤에서 빛이 퍼지는 hover glow 효과와 가이드 패널 토글을 구현했습니다.</p>
-                <a href="react-hello/index.html">▶ 데모 열기</a>
-            </div>
-
-            <div class="card">
-                <div class="icon">🎙️</div>
-                <span class="tag">Python</span><span class="tag">K-means</span>
-                <h3>K-means 화자 분리</h3>
-                <p>MFCC 평균 벡터를 K-means로 군집하여 발화 구간별 화자를 분리하는 기본 파이프라인입니다.</p>
-                <a href="speaker_diarization.py">▶ 코드 보기</a>
-            </div>
-
-            <div class="card">
-                <div class="icon">🧠</div>
-                <span class="tag">SpeechBrain</span><span class="tag">x-vector</span><span class="tag">K-means</span>
-                <h3>x-vector 화자 임베딩 분리</h3>
-                <p>SpeechBrain 사전학습 x-vector로 화자 임베딩을 추출하고 K-means로 군집해 정확도를 높인 버전 (.py + .ipynb).</p>
-                <a href="speaker_diarization_xvector.py">▶ 코드 보기</a>
-                <a href="speaker_diarization_xvector.ipynb">▶ Notebook</a>
-            </div>
-        </div>
-
-        <h2 class="section-title">기술 스택</h2>
-        <div class="stack">
-            <span class="tag">Python</span>
-            <span class="tag">PyTorch</span>
-            <span class="tag">SpeechBrain</span>
-            <span class="tag">scikit-learn</span>
-            <span class="tag">librosa</span>
-            <span class="tag">React</span>
-            <span class="tag">HTML/CSS</span>
-        </div>
-    </main>
-
-    <footer>© 2026 · github.com/zeplanetheyzle</footer>
-
-    <script>
-        // 반짝이는 별 생성
-        const stars = document.getElementById('stars');
-        for (let i = 0; i < 60; i++) {
-            const s = document.createElement('span');
-            s.style.left = Math.random() * 100 + 'vw';
-            s.style.top = Math.random() * 100 + 'vh';
-            s.style.animationDelay = (Math.random() * 3) + 's';
-            s.style.opacity = Math.random();
-            stars.appendChild(s);
+        // 커서를 따라다니는 글로우 + 점
+        function Cursor() {
+            const glow = useRef(null);
+            const dot = useRef(null);
+            useEffect(() => {
+                let gx = window.innerWidth / 2, gy = window.innerHeight / 2;
+                let dx = gx, dy = gy, raf;
+                const loop = () => {
+                    // 글로우는 부드럽게 추적, 점은 바로 따라옴
+                    gx += (mouseX - gx) * 0.15; gy += (mouseY - gy) * 0.15;
+                    dx += (mouseX - dx) * 0.5;  dy += (mouseY - dy) * 0.5;
+                    if (glow.current) glow.current.style.transform = `translate(${gx}px, ${gy}px)`;
+                    if (dot.current) dot.current.style.transform = `translate(${dx}px, ${dy}px)`;
+                    raf = requestAnimationFrame(loop);
+                };
+                let mouseX = gx, mouseY = gy;
+                const move = (e) => { mouseX = e.clientX; mouseY = e.clientY; };
+                window.addEventListener('mousemove', move);
+                raf = requestAnimationFrame(loop);
+                return () => { window.removeEventListener('mousemove', move); cancelAnimationFrame(raf); };
+            }, []);
+            return (
+                <React.Fragment>
+                    <div className="cursor-glow" ref={glow} />
+                    <div className="cursor-dot" ref={dot} />
+                </React.Fragment>
+            );
         }
-        // 스크롤 페이드인
-        const cards = document.querySelectorAll('.card');
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach((e, i) => {
-                if (e.isIntersecting) {
-                    setTimeout(() => e.target.classList.add('visible'), i * 90);
-                    io.unobserve(e.target);
-                }
-            });
-        }, { threshold: 0.15 });
-        cards.forEach(c => io.observe(c));
+
+        // 커서 위치에 따라 기울어지는 카드
+        function TiltCard({ icon, tags, title, desc, links }) {
+            const ref = useRef(null);
+            const onMove = (e) => {
+                const el = ref.current; if (!el) return;
+                const r = el.getBoundingClientRect();
+                const px = (e.clientX - r.left) / r.width;
+                const py = (e.clientY - r.top) / r.height;
+                const rx = (0.5 - py) * 14, ry = (px - 0.5) * 14;
+                el.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
+                el.style.setProperty('--mx', (px * 100) + '%');
+                el.style.setProperty('--my', (py * 100) + '%');
+            };
+            const onLeave = () => { const el = ref.current; if (el) el.style.transform = ''; };
+            return (
+                <div className="card" ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}>
+                    <div className="spot" />
+                    <div className="icon">{icon}</div>
+                    {tags.map((t, i) => <span className="tag" key={i}>{t}</span>)}
+                    <h3>{title}</h3>
+                    <p>{desc}</p>
+                    {links.map((l, i) => <a key={i} href={l.href}>{l.label}</a>)}
+                </div>
+            );
+        }
+
+        function Stars() {
+            const items = Array.from({ length: 60 }, (_, i) => ({
+                left: Math.random() * 100, top: Math.random() * 100,
+                delay: Math.random() * 3, op: Math.random()
+            }));
+            return (
+                <div className="stars">
+                    {items.map((s, i) => (
+                        <span key={i} style={{ left: s.left + 'vw', top: s.top + 'vh', animationDelay: s.delay + 's', opacity: s.op }} />
+                    ))}
+                </div>
+            );
+        }
+
+        function App() {
+            useEffect(() => {
+                const cards = document.querySelectorAll('.card');
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach((e, i) => {
+                        if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 90); io.unobserve(e.target); }
+                    });
+                }, { threshold: 0.15 });
+                cards.forEach(c => io.observe(c));
+            }, []);
+
+            const projects = [
+                { icon: '⚛️', tags: ['React', 'CSS'], title: '안녕하세요 인터랙션 데모',
+                  desc: 'React로 만든 버튼. 마우스를 올리면 뒤에서 빛이 퍼지는 hover glow 효과와 가이드 패널 토글을 구현했습니다.',
+                  links: [{ href: 'react-hello/index.html', label: '▶ 데모 열기' }] },
+                { icon: '🎙️', tags: ['Python', 'K-means'], title: 'K-means 화자 분리',
+                  desc: 'MFCC 평균 벡터를 K-means로 군집하여 발화 구간별 화자를 분리하는 기본 파이프라인입니다.',
+                  links: [{ href: 'speaker_diarization.py', label: '▶ 코드 보기' }] },
+                { icon: '🧠', tags: ['SpeechBrain', 'x-vector', 'K-means'], title: 'x-vector 화자 임베딩 분리',
+                  desc: 'SpeechBrain 사전학습 x-vector로 화자 임베딩을 추출하고 K-means로 군집해 정확도를 높인 버전 (.py + .ipynb).',
+                  links: [{ href: 'speaker_diarization_xvector.py', label: '▶ 코드 보기' }, { href: 'speaker_diarization_xvector.ipynb', label: '▶ Notebook' }] },
+            ];
+            const stack = ['Python', 'PyTorch', 'SpeechBrain', 'scikit-learn', 'librosa', 'React', 'HTML/CSS'];
+
+            return (
+                <React.Fragment>
+                    <Cursor />
+                    <Stars />
+                    <header>
+                        <div className="badge">Portfolio</div>
+                        <h1>PROJECT<br />SHOWCASE</h1>
+                        <p>NLP · 음성 처리 · 웹 프로토타입</p>
+                        <div className="scroll-hint">아래로 스크롤 ↓</div>
+                    </header>
+                    <main className="container">
+                        <h2 className="section-title">프로젝트</h2>
+                        <div className="grid">
+                            {projects.map((p, i) => <TiltCard key={i} {...p} />)}
+                        </div>
+                        <h2 className="section-title">기술 스택</h2>
+                        <div className="stack">
+                            {stack.map((s, i) => <span className="tag" key={i}>{s}</span>)}
+                        </div>
+                    </main>
+                    <footer>© 2026 · github.com/zeplanetheyzle</footer>
+                </React.Fragment>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
